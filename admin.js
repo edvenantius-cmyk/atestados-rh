@@ -250,25 +250,4 @@ async function verDetalhes(id) {
                 <div class="label">Descrição do CID</div>
                 <div class="value">${atestado.cidDescricao}</div>
             </div>
-            <div class="info-item">
-                <div class="label">Data de Envio</div>
-                <div class="value">${data}</div>
-            </div>
-            <div class="info-item">
-                <div class="label">Arquivo</div>
-                <div class="value">${atestado.arquivoNome} (${tamanhoMB} MB)</div>
-            </div>
-        </div>
-        
-        <h3 style="margin-top: 20px; margin-bottom: 10px;">📄 Visualização do Documento</h3>
-        ${visualizador}
-        
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button class="btn-action btn-download" onclick='baixarArquivo("${atestado.id}")' 
-                    style="flex: 1; padding: 12px;">
-                ⬇️ Baixar Arquivo
-            </button>
-            <button class="btn-action btn-delete" onclick='excluirAtestado("${atestado.id}")' 
-                    style="flex: 1; padding: 12px;">Sem resposta
-
-
+Sem resposta
