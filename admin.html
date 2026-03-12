@@ -432,11 +432,12 @@
         </div>
     </div>
 
-   <script type="module">
+  <script type="module">
     // Importações do Firebase usando CDN para o SDK modular
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    // *** AQUI ESTÁ A MUDANÇA: adicionado 'query' e 'orderBy' ***
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
     // SUA CONFIGURAÇÃO DO FIREBASE
@@ -454,21 +455,19 @@
     const app = initializeApp(firebaseConfig);
 
     // Verifique se o Analytics está configurado antes de tentar inicializá-lo
-    // A propriedade measurementId precisa estar presente em firebaseConfig para getAnalytics funcionar.
+    // (Opcional: você pode comentar/remover esta parte se não quiser Analytics no admin)
     let analytics;
     if (firebaseConfig.measurementId) {
       analytics = getAnalytics(app);
     }
     
-
     // Inicializa o Firestore e o Storage
     const db = getFirestore(app);
     const storage = getStorage(app);
 
     // Expõe as instâncias e funções para o escopo global (window)
-    window.db = db;
-    window.storage = storage;
-    window.firebaseImports = { collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL };
+    // *** Certifique-se de que query e orderBy também estão aqui ***
+    window.firebaseImports = { collection, addDoc, serverTimestamp, query, orderBy, ref, uploadBytes, getDownloadURL };
 </script>
 
     
