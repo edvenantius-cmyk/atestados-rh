@@ -381,31 +381,38 @@
         </div>
     </div>
 
-    <!-- VOCÊ VAI SUBSTITUIR ESSA CONFIGURAÇÃO DEPOIS -->
-    <script type="module">
-        // CONFIGURAÇÃO DO FIREBASE - VOCÊ VAI PREENCHER ISSO DEPOIS
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
+   <script type="module">
+    // Importações do Firebase
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-        // ⚠️ VOCÊ VAI SUBSTITUIR ISSO COM SUA CONFIGURAÇÃO DO FIREBASE
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO_ID",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
+    // SUA CONFIGURAÇÃO DO FIREBASE (deve ser exatamente assim)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
+        authDomain: "atestados-rh.firebaseapp.com",
+        projectId: "atestados-rh",
+        storageBucket: "atestados-rh.firebasestorage.app", // Nome CORRETO da propriedade
+        messagingSenderId: "469782444506",
+        appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
+        measurementId: "G-6CENHMEKN4" // Nome CORRETO da propriedade
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+    // Inicializa o Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
 
-        window.db = db;
-        window.storage = storage;
-        window.firebaseImports = { collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL };
-    </script>
+    // Inicializa o Firestore e o Storage
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Expõe as instâncias e funções para o escopo global (window)
+    window.db = db;
+    window.storage = storage;
+    window.firebaseImports = { collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL };
+</script>
+
     
     <script src="envio.js"></script>
 </body>
