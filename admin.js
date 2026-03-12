@@ -1,10 +1,10 @@
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
@@ -16,10 +16,50 @@ const firebaseConfig = {
   measurementId: "G-6CENHMEKN4"
 };
 
-// Inicializar Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const analytics = getAnalytics(app);
 
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
+    authDomain: "atestados-rh.firebaseapp.com",
+    projectId: "atestados-rh",
+    storageBucket: "atestados-rh.firebasestorage.app",
+    messagingSenderId: "469782444506",
+    appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
+    measurementId: "G-6CENHMEKN4"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
+  authDomain: "atestados-rh.firebaseapp.com",
+  projectId: "atestados-rh",
+  storageBucket: "atestados-rh.firebasestorage.app",
+  messagingSenderId: "469782444506",
+  appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
+  measurementId: "G-6CENHMEKN4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+  
 // Variáveis globais
 const SENHA_CORRETA = 'guitar182';
 let todosAtestados = [];
