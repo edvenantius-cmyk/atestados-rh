@@ -433,8 +433,8 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { initializeApp } from "firebase/app" ;   
+import { getAnalytics } from "firebase/analytics" ; 
 
         // ⚠️ MESMA CONFIGURAÇÃO DO index.html
 const firebaseConfig = { 
