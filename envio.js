@@ -1,92 +1,33 @@
-// Base de dados de CIDs mais comuns
+// Base de dados de CIDs
 const cidDatabase = {
-    // Capítulo I - Algumas doenças infecciosas e parasitárias
-    'A00': 'Cólera',
-    'A09': 'Diarreia e gastroenterite de origem infecciosa presumível',
-    'A15': 'Tuberculose respiratória',
-    'A90': 'Dengue',
-    'B34': 'Infecção viral de localização não especificada',
-    
-    // Capítulo II - Neoplasias
-    'C50': 'Neoplasia maligna da mama',
-    'C61': 'Neoplasia maligna da próstata',
-    
-    // Capítulo VI - Doenças do sistema nervoso
-    'G43': 'Enxaqueca',
-    'G44': 'Outras síndromes de algias cefálicas',
-    
-    // Capítulo X - Doenças do aparelho respiratório
-    'J00': 'Nasofaringite aguda (resfriado comum)',
-    'J01': 'Sinusite aguda',
-    'J02': 'Faringite aguda',
-    'J03': 'Amigdalite aguda',
-    'J06': 'Infecção aguda das vias aéreas superiores',
-    'J11': 'Influenza (gripe) devida a vírus não identificado',
-    'J18': 'Pneumonia por microorganismo não especificado',
-    'J20': 'Bronquite aguda',
-    'J30': 'Rinite alérgica e vasomotora',
-    'J40': 'Bronquite não especificada como aguda ou crônica',
-    'J45': 'Asma',
-    
-    // Capítulo XI - Doenças do aparelho digestivo
-    'K21': 'Doença de refluxo gastroesofágico',
-    'K29': 'Gastrite e duodenite',
-    'K30': 'Dispepsia',
-    'K35': 'Apendicite aguda',
-    'K52': 'Outras gastroenterites e colites não infecciosas',
-    'K59': 'Outros transtornos funcionais do intestino',
-    'K80': 'Colelitíase (cálculo biliar)',
-    
-    // Capítulo XIII - Doenças do sistema osteomuscular
-    'M10': 'Gota',
-    'M17': 'Gonartrose (artrose do joelho)',
-    'M19': 'Outras artroses',
-    'M25': 'Outros transtornos articulares',
-    'M47': 'Espondilose',
-    'M51': 'Outros transtornos de discos intervertebrais',
-    'M53': 'Outras dorsopatias',
-    'M54': 'Dorsalgia (dor nas costas)',
-    'M62': 'Outros transtornos musculares',
-    'M65': 'Sinovite e tenossinovite',
-    'M75': 'Lesões do ombro',
-    'M77': 'Outras entesopatias',
-    'M79': 'Outros transtornos dos tecidos moles',
-    
-    // Capítulo XIV - Doenças do aparelho geniturinário
-    'N30': 'Cistite',
-    'N39': 'Outros transtornos do trato urinário',
-    
-    // Capítulo XVIII - Sintomas e sinais
-    'R05': 'Tosse',
-    'R10': 'Dor abdominal e pélvica',
-    'R11': 'Náusea e vômitos',
-    'R50': 'Febre de origem desconhecida',
-    'R51': 'Cefaleia (dor de cabeça)',
-    'R52': 'Dor não classificada',
-    
-    // Capítulo XIX - Lesões e envenenamentos
-    'S06': 'Traumatismo intracraniano',
-    'S13': 'Luxação, entorse ou distensão de articulações do pescoço',
-    'S43': 'Luxação, entorse ou distensão de articulações do ombro',
-    'S52': 'Fratura do antebraço',
-    'S53': 'Luxação, entorse ou distensão do cotovelo',
-    'S60': 'Traumatismo superficial do punho e da mão',
-    'S61': 'Ferimento do punho e da mão',
-    'S62': 'Fratura ao nível do punho e da mão',
-    'S63': 'Luxação, entorse ou distensão do punho e da mão',
-    'S82': 'Fratura da perna, incluindo tornozelo',
-    'S83': 'Luxação, entorse ou distensão do joelho',
-    'S93': 'Luxação, entorse ou distensão do tornozelo e pé',
-    'T14': 'Traumatismo de região não especificada do corpo',
-    
-    // Capítulo XXI - Fatores que influenciam o estado de saúde
-    'Z00': 'Exame geral e investigação de pessoas sem queixas',
-    'Z01': 'Outros exames e investigações especiais',
-    'Z03': 'Observação e avaliação médica por doenças e afecções suspeitas',
-    'Z09': 'Exame de seguimento após tratamento',
-    'Z23': 'Necessidade de imunização contra doença bacteriana isolada',
-    'Z25': 'Necessidade de imunização contra doença viral isolada',
-    'Z76': 'Pessoas em contato com serviços de saúde em outras circunstâncias'
+    'A00': 'Cólera', 'A09': 'Diarreia e gastroenterite', 'A15': 'Tuberculose respiratória',
+    'A90': 'Dengue', 'B34': 'Infecção viral não especificada', 'C50': 'Neoplasia maligna da mama',
+    'C61': 'Neoplasia maligna da próstata', 'G43': 'Enxaqueca', 'G44': 'Outras síndromes de algias cefálicas',
+    'J00': 'Nasofaringite aguda (resfriado comum)', 'J01': 'Sinusite aguda', 'J02': 'Faringite aguda',
+    'J03': 'Amigdalite aguda', 'J06': 'Infecção aguda das vias aéreas superiores',
+    'J11': 'Influenza (gripe)', 'J18': 'Pneumonia', 'J20': 'Bronquite aguda',
+    'J30': 'Rinite alérgica', 'J40': 'Bronquite não especificada', 'J45': 'Asma',
+    'K21': 'Doença de refluxo gastroesofágico', 'K29': 'Gastrite e duodenite', 'K30': 'Dispepsia',
+    'K35': 'Apendicite aguda', 'K52': 'Outras gastroenterites e colites',
+    'K59': 'Outros transtornos funcionais do intestino', 'K80': 'Colelitíase',
+    'M10': 'Gota', 'M17': 'Gonartrose (artrose do joelho)', 'M19': 'Outras artroses',
+    'M25': 'Outros transtornos articulares', 'M47': 'Espondilose',
+    'M51': 'Outros transtornos de discos intervertebrais', 'M53': 'Outras dorsopatias',
+    'M54': 'Dorsalgia (dor nas costas)', 'M62': 'Outros transtornos musculares',
+    'M65': 'Sinovite e tenossinovite', 'M75': 'Lesões do ombro', 'M77': 'Outras entesopatias',
+    'M79': 'Outros transtornos dos tecidos moles', 'N30': 'Cistite',
+    'N39': 'Outros transtornos do trato urinário', 'R05': 'Tosse', 'R10': 'Dor abdominal e pélvica',
+    'R11': 'Náusea e vômitos', 'R50': 'Febre de origem desconhecida', 'R51': 'Cefaleia (dor de cabeça)',
+    'R52': 'Dor não classificada', 'S06': 'Traumatismo intracraniano',
+    'S13': 'Luxação, entorse do pescoço', 'S43': 'Luxação, entorse do ombro',
+    'S52': 'Fratura do antebraço', 'S53': 'Luxação, entorse do cotovelo',
+    'S60': 'Traumatismo superficial do punho', 'S61': 'Ferimento do punho e mão',
+    'S62': 'Fratura do punho e mão', 'S63': 'Luxação, entorse do punho',
+    'S82': 'Fratura da perna', 'S83': 'Luxação, entorse do joelho',
+    'S93': 'Luxação, entorse do tornozelo', 'T14': 'Traumatismo não especificado',
+    'Z00': 'Exame geral', 'Z01': 'Outros exames especiais', 'Z03': 'Observação médica',
+    'Z09': 'Exame de seguimento', 'Z23': 'Imunização bacteriana', 'Z25': 'Imunização viral',
+    'Z76': 'Pessoas em contato com serviços de saúde'
 };
 
 let arquivoSelecionado = null;
@@ -100,10 +41,7 @@ function buscarCID(codigo) {
         return;
     }
     
-    // Normalizar código (maiúsculo, sem espaços)
     codigo = codigo.toUpperCase().trim();
-    
-    // Buscar na base
     const descricao = cidDatabase[codigo];
     
     if (descricao) {
@@ -156,10 +94,8 @@ function handleFileSelect(event) {
         return;
     }
     
-    // Salvar arquivo
     arquivoSelecionado = file;
     
-    // Mostrar preview
     const preview = document.getElementById('filePreview');
     const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
     const icon = file.type.includes('pdf') ? '📄' : '🖼️';
@@ -209,48 +145,48 @@ document.getElementById('atestadoForm').addEventListener('submit', async functio
         return;
     }
     
-    // Desabilitar botão
-    const btnEnviar = document.getElementById('btnEnviar');
-    btnEnviar.disabled = true;
-    btnEnviar.textContent = '⏳ Enviando...';
+    // Mostrar loading
+    document.getElementById('atestadoForm').style.display = 'none';
+    document.getElementById('loading').classList.add('show');
     
     try {
-        // Converter arquivo para base64
-        const base64File = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(arquivo);
-        });
+        // 1. Upload do arquivo para Firebase Storage
+        const { ref, uploadBytes, getDownloadURL } = window.firebaseImports;
+        const storage = window.storage;
         
-        // Criar objeto do atestado
-        const atestado = {
-            id: Date.now() + Math.random().toString(36).substr(2, 9),
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${arquivo.name}`;
+        const storageRef = ref(storage, `atestados/${fileName}`);
+        
+        // Upload
+        const snapshot = await uploadBytes(storageRef, arquivo);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        
+        // 2. Salvar dados no Firestore
+        const { collection, addDoc, serverTimestamp } = window.firebaseImports;
+        const db = window.db;
+        
+        await addDoc(collection(db, 'atestados'), {
             nome: nome,
             tipo: tipo,
             cid: cid || 'Não informado',
             cidDescricao: cid ? (cidDatabase[cid] || 'Não encontrado') : 'Não informado',
-            arquivo: base64File,
             arquivoNome: arquivo.name,
+            arquivoURL: downloadURL,
             arquivoTipo: arquivo.type,
             arquivoTamanho: arquivo.size,
-            dataEnvio: new Date().toISOString(),
+            dataEnvio: serverTimestamp(),
             status: 'novo'
-        };
-        
-        // Salvar no localStorage
-        let atestados = JSON.parse(localStorage.getItem('atestados_rh') || '[]');
-        atestados.push(atestado);
-        localStorage.setItem('atestados_rh', JSON.stringify(atestados));
+        });
         
         // Mostrar sucesso
-        document.getElementById('atestadoForm').style.display = 'none';
+        document.getElementById('loading').classList.remove('show');
         document.getElementById('successMessage').style.display = 'block';
         
     } catch (error) {
         console.error('Erro ao enviar:', error);
-        showAlert('Erro ao enviar documento. Tente novamente.', 'error');
-        btnEnviar.disabled = false;
-        btnEnviar.textContent = '📤 Enviar Documento';
+        document.getElementById('loading').classList.remove('show');
+        document.getElementById('atestadoForm').style.display = 'block';
+        showAlert('Erro ao enviar documento: ' + error.message, 'error');
     }
 });
