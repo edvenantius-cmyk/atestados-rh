@@ -1,4 +1,4 @@
-const SENHA_CORRETA = 'guitar182';
+const SENHA_CORRETA = guitar182;
 let todosAtestados = [];
 let unsubscribe = null;
 
