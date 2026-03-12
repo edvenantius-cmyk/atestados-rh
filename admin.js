@@ -51,19 +51,27 @@ function iniciarSincronizacao() {
     
     const q = query(collection(db, 'atestados'), orderBy('dataEnvio', 'desc'));
     
-    unsubscribe = onSnapshot(q, (snapshot) => {
-        todosAtestados = [];
-        snapshot.forEach((doc) => {
-            todosAtestados.push({
-                id: doc.id,
-                ...doc.data()
+    unsubscribe = onSnapshot(q, 
+        (snapshot) => { // Callback de sucesso
+            todosAtestados = [];
+            snapshot.forEach((doc) => {
+                todosAtestados.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
             });
-        });
-        
-        atualizarEstatisticas();
-        renderizarTabela(todosAtestados);
-    });
+            
+            atualizarEstatisticas();
+            renderizarTabela(todosAtestados);
+        },
+        (error) => { // Callback de erro
+            console.error("Erro ao sincronizar atestados do Firestore:", error);
+            // Você pode adicionar uma mensagem de alerta aqui para o usuário
+            alert("Erro ao carregar documentos: " + error.message);
+        }
+    );
 }
+
 
 // Atualizar estatísticas
 function atualizarEstatisticas() {
