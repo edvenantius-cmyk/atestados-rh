@@ -433,26 +433,33 @@
     </div>
 
    <script type="module">
-    // Importações do Firebase
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+    // Importações do Firebase usando CDN para o SDK modular
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-    // SUA CONFIGURAÇÃO DO FIREBASE (deve ser exatamente assim)
+    // SUA CONFIGURAÇÃO DO FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
         authDomain: "atestados-rh.firebaseapp.com",
         projectId: "atestados-rh",
-        storageBucket: "atestados-rh.firebasestorage.app", // Nome CORRETO da propriedade
+        storageBucket: "atestados-rh.firebasestorage.app",
         messagingSenderId: "469782444506",
         appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
-        measurementId: "G-6CENHMEKN4" // Nome CORRETO da propriedade
+        measurementId: "G-6CENHMEKN4"
     };
 
     // Inicializa o Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+
+    // Verifique se o Analytics está configurado antes de tentar inicializá-lo
+    // A propriedade measurementId precisa estar presente em firebaseConfig para getAnalytics funcionar.
+    let analytics;
+    if (firebaseConfig.measurementId) {
+      analytics = getAnalytics(app);
+    }
+    
 
     // Inicializa o Firestore e o Storage
     const db = getFirestore(app);
@@ -463,6 +470,7 @@
     window.storage = storage;
     window.firebaseImports = { collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL };
 </script>
+
     
     <script src="admin.js"></script>
 </body>
