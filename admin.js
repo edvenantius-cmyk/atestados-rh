@@ -1,3 +1,22 @@
+// ⚠️ IMPORTAÇÕES FIREBASE - COLE SUA CONFIGURAÇÃO AQUI
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ⚠️ CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SUAS CREDENCIAIS
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY_AQUI",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO_ID",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Variáveis globais
 const SENHA_CORRETA = 'guitar182';
 let todosAtestados = [];
 let unsubscribe = null;
@@ -46,22 +65,22 @@ function logout() {
 
 // Iniciar sincronização em tempo real
 function iniciarSincronizacao() {
-    const { collection, query, orderBy, onSnapshot } = window.firebaseImports;
-    const db = window.db;
-    
     const q = query(collection(db, 'atestados'), orderBy('dataEnvio', 'desc'));
     
     unsubscribe = onSnapshot(q, (snapshot) => {
         todosAtestados = [];
-        snapshot.forEach((doc) => {
+        snapshot.forEach((docSnap) => {
             todosAtestados.push({
-                id: doc.id,
-                ...doc.data()
+                id: docSnap.id,
+                ...docSnap.data()
             });
         });
         
         atualizarEstatisticas();
         renderizarTabela(todosAtestados);
+    }, (error) => {
+        console.error('Erro ao carregar atestados:', error);
+        alert('Erro ao carregar documentos: ' + error.message);
     });
 }
 
@@ -175,9 +194,6 @@ async function verDetalhes(id) {
     if (!atestado) return;
     
     // Marcar como visto
-    const { doc, updateDoc } = window.firebaseImports;
-    const db = window.db;
-    
     try {
         await updateDoc(doc(db, 'atestados', id), {
             status: 'visto'
@@ -288,9 +304,6 @@ async function excluirAtestado(id) {
     if (!atestado) return;
     
     if (confirm(`⚠️ ATENÇÃO\n\nTem certeza que deseja EXCLUIR o documento de:\n\n${atestado.nome}\n\nEsta ação não pode ser desfeita!`)) {
-        const { doc, deleteDoc } = window.firebaseImports;
-        const db = window.db;
-        
         try {
             await deleteDoc(doc(db, 'atestados', id));
             fecharModal();
@@ -311,9 +324,6 @@ async function limparTodos() {
     
     if (confirm(`⚠️ ATENÇÃO CRÍTICA\n\nVocê está prestes a EXCLUIR TODOS OS ${todosAtestados.length} DOCUMENTOS!\n\nEsta ação NÃO PODE ser desfeita!\n\nTem certeza?`)) {
         if (confirm('Confirma NOVAMENTE? Todos os documentos serão perdidos!')) {
-            const { doc, deleteDoc } = window.firebaseImports;
-            const db = window.db;
-            
             try {
                 for (const atestado of todosAtestados) {
                     await deleteDoc(doc(db, 'atestados', atestado.id));

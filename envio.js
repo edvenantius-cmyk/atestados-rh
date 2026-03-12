@@ -1,3 +1,23 @@
+// ⚠️ IMPORTAÇÕES FIREBASE - COLE SUA CONFIGURAÇÃO AQUI
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
+
+// ⚠️ CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SUAS CREDENCIAIS
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY_AQUI",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO_ID",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
 // Base de dados de CIDs
 const cidDatabase = {
     'A00': 'Cólera', 'A09': 'Diarreia e gastroenterite', 'A15': 'Tuberculose respiratória',
@@ -151,9 +171,6 @@ document.getElementById('atestadoForm').addEventListener('submit', async functio
     
     try {
         // 1. Upload do arquivo para Firebase Storage
-        const { ref, uploadBytes, getDownloadURL } = window.firebaseImports;
-        const storage = window.storage;
-        
         const timestamp = Date.now();
         const fileName = `${timestamp}_${arquivo.name}`;
         const storageRef = ref(storage, `atestados/${fileName}`);
@@ -163,9 +180,6 @@ document.getElementById('atestadoForm').addEventListener('submit', async functio
         const downloadURL = await getDownloadURL(snapshot.ref);
         
         // 2. Salvar dados no Firestore
-        const { collection, addDoc, serverTimestamp } = window.firebaseImports;
-        const db = window.db;
-        
         await addDoc(collection(db, 'atestados'), {
             nome: nome,
             tipo: tipo,
