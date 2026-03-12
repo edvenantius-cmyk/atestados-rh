@@ -28,15 +28,11 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
 
 // Verificar autenticação
 window.addEventListener('load', () => {
-    // Adicionar um pequeno delay para garantir que window.firebaseImports esteja totalmente pronto
-    // Isso é uma solução paliativa para garantir a ordem de execução do script type="module" e admin.js
-    setTimeout(() => { 
-        if (sessionStorage.getItem('rh_autenticado') === 'true') {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminPanel').classList.add('show');
-            iniciarSincronizacao();
-        }
-    }, 100); // 100ms de delay
+    if (sessionStorage.getItem('rh_autenticado') === 'true') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').classList.add('show');
+        iniciarSincronizacao();
+    }
 });
 
 // Logout
@@ -50,36 +46,23 @@ function logout() {
 
 // Iniciar sincronização em tempo real
 function iniciarSincronizacao() {
-    // Desestruturamos 'db' e as funções do Firestore de 'window.firebaseImports'
-    const { db, collection, query, orderBy, onSnapshot } = window.firebaseImports;
+    const { collection, query, orderBy, onSnapshot } = window.firebaseImports;
+    const db = window.db;
     
-    // Adicionar uma verificação para garantir que 'db' e as funções existem antes de usar
-    if (!db || !collection || !query || !orderBy || !onSnapshot) {
-        console.error("Firebase Firestore não está totalmente carregado ou as funções necessárias não foram expostas.");
-        alert("Erro ao iniciar sincronização: Falta configuração do Firebase.");
-        return;
-    }
-
     const q = query(collection(db, 'atestados'), orderBy('dataEnvio', 'desc'));
     
-    unsubscribe = onSnapshot(q, 
-        (snapshot) => { // Callback de sucesso
-            todosAtestados = [];
-            snapshot.forEach((doc) => {
-                todosAtestados.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+    unsubscribe = onSnapshot(q, (snapshot) => {
+        todosAtestados = [];
+        snapshot.forEach((doc) => {
+            todosAtestados.push({
+                id: doc.id,
+                ...doc.data()
             });
-            
-            atualizarEstatisticas();
-            renderizarTabela(todosAtestados);
-        },
-        (error) => { // Callback de erro
-            console.error("Erro ao sincronizar atestados do Firestore:", error);
-            alert("Erro ao carregar documentos: " + error.message);
-        }
-    );
+        });
+        
+        atualizarEstatisticas();
+        renderizarTabela(todosAtestados);
+    });
 }
 
 // Atualizar estatísticas
@@ -129,8 +112,7 @@ function renderizarTabela(atestados) {
     }
     
     tbody.innerHTML = atestados.map(atestado => {
-        // Verifica se atestado.dataEnvio existe e tem o método toDate()
-        const data = atestado.dataEnvio && typeof atestado.dataEnvio.toDate === 'function' ? 
+        const data = atestado.dataEnvio ? 
             new Date(atestado.dataEnvio.toDate()).toLocaleString('pt-BR') : 
             'Aguardando...';
         
@@ -150,7 +132,7 @@ function renderizarTabela(atestados) {
                 <td><strong>${atestado.nome}</strong></td>
                 <td><span class="badge ${tipoClass}">${tipoLabel}</span></td>
                 <td>
-                    ${atestado.cid && atestado.cid !== 'Não informado' ? 
+                    ${atestado.cid !== 'Não informado' ? 
                         `<strong>${atestado.cid}</strong><br><small style="color: #6B7280;">${atestado.cidDescricao}</small>` 
                         : '<span style="color: #9CA3AF;">Não informado</span>'}
                 </td>
@@ -193,7 +175,8 @@ async function verDetalhes(id) {
     if (!atestado) return;
     
     // Marcar como visto
-    const { db, doc, updateDoc } = window.firebaseImports;
+    const { doc, updateDoc } = window.firebaseImports;
+    const db = window.db;
     
     try {
         await updateDoc(doc(db, 'atestados', id), {
@@ -203,7 +186,7 @@ async function verDetalhes(id) {
         console.error('Erro ao marcar como visto:', error);
     }
     
-    const data = atestado.dataEnvio && typeof atestado.dataEnvio.toDate === 'function' ? 
+    const data = atestado.dataEnvio ? 
         new Date(atestado.dataEnvio.toDate()).toLocaleString('pt-BR') : 
         'Aguardando...';
     
@@ -224,7 +207,7 @@ async function verDetalhes(id) {
                 <iframe src="${atestado.arquivoURL}"></iframe>
             </div>
         `;
-    } else if (atestado.arquivoTipo && atestado.arquivoTipo.startsWith('image/')) {
+    } else if (atestado.arquivoTipo.startsWith('image/')) {
         visualizador = `
             <div class="file-viewer">
                 <img src="${atestado.arquivoURL}" alt="Documento">
@@ -250,4 +233,96 @@ async function verDetalhes(id) {
                 <div class="label">Descrição do CID</div>
                 <div class="value">${atestado.cidDescricao}</div>
             </div>
-Sem resposta
+            <div class="info-item">
+                <div class="label">Data de Envio</div>
+                <div class="value">${data}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Arquivo</div>
+                <div class="value">${atestado.arquivoNome} (${tamanhoMB} MB)</div>
+            </div>
+        </div>
+        
+        <h3 style="margin-top: 20px; margin-bottom: 10px;">📄 Visualização do Documento</h3>
+        ${visualizador}
+        
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <button class="btn-action btn-download" onclick='baixarArquivo("${atestado.id}")' 
+                    style="flex: 1; padding: 12px;">
+                ⬇️ Baixar Arquivo
+            </button>
+            <button class="btn-action btn-delete" onclick='excluirAtestado("${atestado.id}")' 
+                    style="flex: 1; padding: 12px;">
+                🗑️ Excluir
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('modalDetalhes').classList.add('show');
+}
+
+// Fechar modal
+function fecharModal() {
+    document.getElementById('modalDetalhes').classList.remove('show');
+}
+
+document.getElementById('modalDetalhes').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+});
+
+// Baixar arquivo
+function baixarArquivo(id) {
+    const atestado = todosAtestados.find(a => a.id === id);
+    if (!atestado) return;
+    
+    const link = document.createElement('a');
+    link.href = atestado.arquivoURL;
+    link.download = atestado.arquivoNome;
+    link.target = '_blank';
+    link.click();
+}
+
+// Excluir atestado
+async function excluirAtestado(id) {
+    const atestado = todosAtestados.find(a => a.id === id);
+    if (!atestado) return;
+    
+    if (confirm(`⚠️ ATENÇÃO\n\nTem certeza que deseja EXCLUIR o documento de:\n\n${atestado.nome}\n\nEsta ação não pode ser desfeita!`)) {
+        const { doc, deleteDoc } = window.firebaseImports;
+        const db = window.db;
+        
+        try {
+            await deleteDoc(doc(db, 'atestados', id));
+            fecharModal();
+            alert('✅ Documento excluído com sucesso!');
+        } catch (error) {
+            console.error('Erro ao excluir:', error);
+            alert('Erro ao excluir documento: ' + error.message);
+        }
+    }
+}
+
+// Limpar todos
+async function limparTodos() {
+    if (todosAtestados.length === 0) {
+        alert('Não há documentos para limpar.');
+        return;
+    }
+    
+    if (confirm(`⚠️ ATENÇÃO CRÍTICA\n\nVocê está prestes a EXCLUIR TODOS OS ${todosAtestados.length} DOCUMENTOS!\n\nEsta ação NÃO PODE ser desfeita!\n\nTem certeza?`)) {
+        if (confirm('Confirma NOVAMENTE? Todos os documentos serão perdidos!')) {
+            const { doc, deleteDoc } = window.firebaseImports;
+            const db = window.db;
+            
+            try {
+                for (const atestado of todosAtestados) {
+                    await deleteDoc(doc(db, 'atestados', atestado.id));
+                }
+                alert('✅ Todos os documentos foram excluídos!');
+            } catch (error) {
+                console.error('Erro ao limpar:', error);
+                alert('Erro ao limpar documentos: ' + error.message);
+            }
+        }
+    }
+}
