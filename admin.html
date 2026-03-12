@@ -434,13 +434,11 @@
 
 <script type="module">
     // Importações do Firebase usando CDN para o SDK modular
-    // *** ATUALIZADO PARA A VERSÃO 10.8.0 ***
+    // TODAS AS IMPORTAÇÕES AGORA USAM A VERSÃO 10.8.0
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    // Opcional: Se não for usar Analytics no admin, pode remover esta linha
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
     
-    // Funções do Firestore - TODAS as que você usa
-    // *** ATUALIZADO PARA A VERSÃO 10.8.0 ***
+    // Funções do Firestore - Todas as que são usadas pelo admin.js
     import { 
         getFirestore, 
         collection, 
@@ -448,31 +446,30 @@
         serverTimestamp, 
         query, 
         orderBy, 
-        onSnapshot, // Para sincronização
-        doc,        // Para referenciar documentos
-        updateDoc,  // Para atualizar status
-        deleteDoc   // Para excluir
+        onSnapshot, 
+        doc,        
+        updateDoc,  
+        deleteDoc   
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
-    // Funções do Storage - TODAS as que você usa
-    // *** ATUALIZADO PARA A VERSÃO 10.8.0 ***
+    // Funções do Storage - Todas as que são usadas
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-    // SUA CONFIGURAÇÃO DO FIREBASE (já está correta)
+    // SUA CONFIGURAÇÃO DO FIREBASE
     const firebaseConfig = {
-        apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
-        authDomain: "atestados-rh.firebaseapp.com",
-        projectId: "atestados-rh",
-        storageBucket: "atestados-rh.firebasestorage.app",
-        messagingSenderId: "469782444506",
-        appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
-        measurementId: "G-6CENHMEKN4"
+        apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo", 
+        authDomain:"atestados-rh.firebaseapp.com", 
+        projectId:"atestados-rh", 
+        storageBucket : "atestados-rh.firebasestorage.app" , 
+        messagingSenderId : "469782444506",
+        appId : "1:469782444506:web:e285cec51e7ab49c8ba8e3", 
+        measurementId : "G-6CENHMEKN4" 
     };
 
     // Inicializa o Firebase
     const app = initializeApp(firebaseConfig);
 
-    // Inicialização do Analytics (Opcional: Para limpar o erro do console do Analytics, você pode comentar/remover este bloco inteiro se não precisar de Analytics na página admin)
+    // Bloco de Analytics (Opcional: você pode comentar/remover se não usar no admin)
     // let analytics;
     // if (firebaseConfig.measurementId) {
     //   analytics = getAnalytics(app);
@@ -482,10 +479,11 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    // Expõe as instâncias e funções para o escopo global (window)
-    window.db = db;
-    window.storage = storage;
+    // EXPÕE TUDO PARA O ESCOPO GLOBAL `window.firebaseImports`
+    // Agora, `db` e `storage` são partes do `firebaseImports`
     window.firebaseImports = { 
+        db, // Instância do Firestore
+        storage, // Instância do Storage
         collection, 
         addDoc, 
         serverTimestamp, 
