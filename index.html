@@ -382,35 +382,38 @@
     </div>
 
     
-    <script type="module">
-       
-       import { initializeApp } from "firebase/app" ;
-import { getAnalytics } from "firebase/analytics" ;
+  <script type="module">
+    // Importações do Firebase
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore"; // Importa funções do Firestore
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Importa funções do Storage
 
-     
-        const firebaseConfig = {
-  apiKey : "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo" , 
-  authDomain:"atestados-rh.firebaseapp.com", 
-  projectId:"atestados-rh", 
-  bucket de armazenamento : "atestados-rh.firebasestorage.app" , 
-  messagingSenderId : " 469782444506" 
-  appId : "1:469782444506:web:e285cec51e7ab49c8ba8e3" , 
-  ID da medição : "G-6CENHMEKN4" 
-};
+    // Sua configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
+        authDomain: "atestados-rh.firebaseapp.com",
+        projectId: "atestados-rh",
+        storageBucket: "atestados-rh.firebasestorage.app", // Corrigido para storageBucket
+        messagingSenderId: "469782444506", // Espaço removido
+        appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
+        measurementId: "G-6CENHMEKN4" // Corrigido para measurementId
+    };
 
-// Inicializar o Firebase
-const app = initializeApp ( firebaseConfig );
-const analytics = getAnalytics ( app );
+    // Inicializa o Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app); // Se você estiver usando o Analytics
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+    // Inicializa o Firestore e o Storage
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-        window.db = db;
-        window.storage = storage;
-        window.firebaseImports = { collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL };
-    </script>
-    
-    <script src="envio.js"></script>
+    // Expõe as instâncias e funções globais, se necessário
+    window.db = db;
+    window.storage = storage;
+    window.firebaseImports = { collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL };
+</script>
+
+<script src="envio.js"></script>
 </body>
 </html>
