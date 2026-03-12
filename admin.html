@@ -434,10 +434,13 @@
 
 <script type="module">
     // Importações do Firebase usando CDN para o SDK modular
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+    // *** ATUALIZADO PARA A VERSÃO 10.8.0 ***
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    // Opcional: Se não for usar Analytics no admin, pode remover esta linha
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
     
-    // ATUALIZAÇÃO CRÍTICA AQUI: Inclusão de query, orderBy, onSnapshot, doc, updateDoc, deleteDoc
+    // Funções do Firestore - TODAS as que você usa
+    // *** ATUALIZADO PARA A VERSÃO 10.8.0 ***
     import { 
         getFirestore, 
         collection, 
@@ -445,15 +448,17 @@
         serverTimestamp, 
         query, 
         orderBy, 
-        onSnapshot, // Necessário para a sincronização em tempo real
-        doc,        // Necessário para referenciar documentos (update e delete)
-        updateDoc,  // Necessário para atualizar o status (marcar como visto)
-        deleteDoc   // Necessário para excluir documentos
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        onSnapshot, // Para sincronização
+        doc,        // Para referenciar documentos
+        updateDoc,  // Para atualizar status
+        deleteDoc   // Para excluir
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+    // Funções do Storage - TODAS as que você usa
+    // *** ATUALIZADO PARA A VERSÃO 10.8.0 ***
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-    // SUA CONFIGURAÇÃO DO FIREBASE (a mesma que já está correta)
+    // SUA CONFIGURAÇÃO DO FIREBASE (já está correta)
     const firebaseConfig = {
         apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
         authDomain: "atestados-rh.firebaseapp.com",
@@ -467,18 +472,19 @@
     // Inicializa o Firebase
     const app = initializeApp(firebaseConfig);
 
-    // Inicialização do Analytics (opcional, pode ser removida se não for usada no admin)
-    let analytics;
-    if (firebaseConfig.measurementId) {
-      analytics = getAnalytics(app);
-    }
+    // Inicialização do Analytics (Opcional: Para limpar o erro do console do Analytics, você pode comentar/remover este bloco inteiro se não precisar de Analytics na página admin)
+    // let analytics;
+    // if (firebaseConfig.measurementId) {
+    //   analytics = getAnalytics(app);
+    // }
     
     // Inicializa o Firestore e o Storage
     const db = getFirestore(app);
     const storage = getStorage(app);
 
     // Expõe as instâncias e funções para o escopo global (window)
-    // ATUALIZAÇÃO CRÍTICA AQUI: Inclusão de query, orderBy, onSnapshot, doc, updateDoc, deleteDoc
+    window.db = db;
+    window.storage = storage;
     window.firebaseImports = { 
         collection, 
         addDoc, 
