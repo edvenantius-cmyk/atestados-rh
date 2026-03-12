@@ -29,6 +29,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
 // Verificar autenticação
 window.addEventListener('load', () => {
     // Adicionar um pequeno delay para garantir que window.firebaseImports esteja totalmente pronto
+    // Isso é uma solução paliativa para garantir a ordem de execução do script type="module" e admin.js
     setTimeout(() => { 
         if (sessionStorage.getItem('rh_autenticado') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
@@ -128,7 +129,8 @@ function renderizarTabela(atestados) {
     }
     
     tbody.innerHTML = atestados.map(atestado => {
-        const data = atestado.dataEnvio && atestado.dataEnvio.toDate ? 
+        // Verifica se atestado.dataEnvio existe e tem o método toDate()
+        const data = atestado.dataEnvio && typeof atestado.dataEnvio.toDate === 'function' ? 
             new Date(atestado.dataEnvio.toDate()).toLocaleString('pt-BR') : 
             'Aguardando...';
         
@@ -148,7 +150,7 @@ function renderizarTabela(atestados) {
                 <td><strong>${atestado.nome}</strong></td>
                 <td><span class="badge ${tipoClass}">${tipoLabel}</span></td>
                 <td>
-                    ${atestado.cid !== 'Não informado' ? 
+                    ${atestado.cid && atestado.cid !== 'Não informado' ? 
                         `<strong>${atestado.cid}</strong><br><small style="color: #6B7280;">${atestado.cidDescricao}</small>` 
                         : '<span style="color: #9CA3AF;">Não informado</span>'}
                 </td>
@@ -201,7 +203,7 @@ async function verDetalhes(id) {
         console.error('Erro ao marcar como visto:', error);
     }
     
-    const data = atestado.dataEnvio && atestado.dataEnvio.toDate ? 
+    const data = atestado.dataEnvio && typeof atestado.dataEnvio.toDate === 'function' ? 
         new Date(atestado.dataEnvio.toDate()).toLocaleString('pt-BR') : 
         'Aguardando...';
     
@@ -222,7 +224,7 @@ async function verDetalhes(id) {
                 <iframe src="${atestado.arquivoURL}"></iframe>
             </div>
         `;
-    } else if (atestado.arquivoTipo.startsWith('image/')) {
+    } else if (atestado.arquivoTipo && atestado.arquivoTipo.startsWith('image/')) {
         visualizador = `
             <div class="file-viewer">
                 <img src="${atestado.arquivoURL}" alt="Documento">
@@ -267,15 +269,6 @@ async function verDetalhes(id) {
                 ⬇️ Baixar Arquivo
             </button>
             <button class="btn-action btn-delete" onclick='excluirAtestado("${atestado.id}")' 
-                    style="flex: 1; padding: 12px;">
-                🗑️ Excluir
-            </button>
-        </div>
-    `;
-    
-    document.getElementById('modalDetalhes').classList.add('show');
-}
+                    style="flex: 1; padding: 12px;">Sem resposta
 
-// Fechar modal
-function fecharModal() {
-    Sem resposta
+
