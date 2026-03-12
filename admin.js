@@ -1,66 +1,3 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
-  authDomain: "atestados-rh.firebaseapp.com",
-  projectId: "atestados-rh",
-  storageBucket: "atestados-rh.firebasestorage.app",
-  messagingSenderId: "469782444506",
-  appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
-  measurementId: "G-6CENHMEKN4"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
-    authDomain: "atestados-rh.firebaseapp.com",
-    projectId: "atestados-rh",
-    storageBucket: "atestados-rh.firebasestorage.app",
-    messagingSenderId: "469782444506",
-    appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
-    measurementId: "G-6CENHMEKN4"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
-  authDomain: "atestados-rh.firebaseapp.com",
-  projectId: "atestados-rh",
-  storageBucket: "atestados-rh.firebasestorage.app",
-  messagingSenderId: "469782444506",
-  appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
-  measurementId: "G-6CENHMEKN4"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-  
-// Variáveis globais
 const SENHA_CORRETA = 'guitar182';
 let todosAtestados = [];
 let unsubscribe = null;
@@ -109,22 +46,22 @@ function logout() {
 
 // Iniciar sincronização em tempo real
 function iniciarSincronizacao() {
+    const { collection, query, orderBy, onSnapshot } = window.firebaseImports;
+    const db = window.db;
+    
     const q = query(collection(db, 'atestados'), orderBy('dataEnvio', 'desc'));
     
     unsubscribe = onSnapshot(q, (snapshot) => {
         todosAtestados = [];
-        snapshot.forEach((docSnap) => {
+        snapshot.forEach((doc) => {
             todosAtestados.push({
-                id: docSnap.id,
-                ...docSnap.data()
+                id: doc.id,
+                ...doc.data()
             });
         });
         
         atualizarEstatisticas();
         renderizarTabela(todosAtestados);
-    }, (error) => {
-        console.error('Erro ao carregar atestados:', error);
-        alert('Erro ao carregar documentos: ' + error.message);
     });
 }
 
@@ -238,6 +175,9 @@ async function verDetalhes(id) {
     if (!atestado) return;
     
     // Marcar como visto
+    const { doc, updateDoc } = window.firebaseImports;
+    const db = window.db;
+    
     try {
         await updateDoc(doc(db, 'atestados', id), {
             status: 'visto'
@@ -348,6 +288,9 @@ async function excluirAtestado(id) {
     if (!atestado) return;
     
     if (confirm(`⚠️ ATENÇÃO\n\nTem certeza que deseja EXCLUIR o documento de:\n\n${atestado.nome}\n\nEsta ação não pode ser desfeita!`)) {
+        const { doc, deleteDoc } = window.firebaseImports;
+        const db = window.db;
+        
         try {
             await deleteDoc(doc(db, 'atestados', id));
             fecharModal();
@@ -368,6 +311,9 @@ async function limparTodos() {
     
     if (confirm(`⚠️ ATENÇÃO CRÍTICA\n\nVocê está prestes a EXCLUIR TODOS OS ${todosAtestados.length} DOCUMENTOS!\n\nEsta ação NÃO PODE ser desfeita!\n\nTem certeza?`)) {
         if (confirm('Confirma NOVAMENTE? Todos os documentos serão perdidos!')) {
+            const { doc, deleteDoc } = window.firebaseImports;
+            const db = window.db;
+            
             try {
                 for (const atestado of todosAtestados) {
                     await deleteDoc(doc(db, 'atestados', atestado.id));
