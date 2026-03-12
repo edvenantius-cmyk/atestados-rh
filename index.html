@@ -381,6 +381,55 @@
         </div>
     </div>
 
+    <script type="module">
+        // Importações do Firebase usando CDN para o SDK modular
+        // Use a versão 10.8.0 ou a mais recente que você estiver usando
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        
+        // Funções do Firestore (apenas as que o index.html precisa, por exemplo, addDoc, serverTimestamp)
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        // Funções do Storage (apenas as que o index.html precisa, por exemplo, ref, uploadBytes, getDownloadURL)
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // SUA CONFIGURAÇÃO DO FIREBASE (copiada do console do Firebase)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo", 
+            authDomain:"atestados-rh.firebaseapp.com", 
+            projectId:"atestados-rh", 
+            storageBucket : "atestados-rh.firebasestorage.app" , 
+            messagingSenderId : "469782444506",
+            appId : "1:469782444506:web:e285cec51e7ab49c8ba8e3", 
+            measurementId : "G-6CENHMEKN4" 
+        };
+
+        // Inicializa o Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Opcional: inicialização do Analytics, se você quiser rastrear eventos na página de envio
+        let analytics;
+        if (firebaseConfig.measurementId) {
+          analytics = getAnalytics(app);
+        }
+        
+        // Inicializa o Firestore e o Storage
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Expõe as instâncias e funções que o seu 'envio.js' vai precisar
+        window.firebaseImports = { 
+            db, // Instância do Firestore
+            storage, // Instância do Storage
+            collection, 
+            addDoc, 
+            serverTimestamp, 
+            ref, 
+            uploadBytes, 
+            getDownloadURL 
+        };
+    </script>
+    
     <script type="module" src="envio.js"></script>
 </body>
 </html>
