@@ -381,28 +381,30 @@
         </div>
     </div>
 
-    <!-- VOCÊ VAI SUBSTITUIR ESSA CONFIGURAÇÃO DEPOIS -->
     <script type="module">
-        // CONFIGURAÇÃO DO FIREBASE - VOCÊ VAI PREENCHER ISSO DEPOIS
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 
-        // ⚠️ VOCÊ VAI SUBSTITUIR ISSO COM SUA CONFIGURAÇÃO DO FIREBASE
-         const firebaseConfig = {
-    apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
-    authDomain: "atestados-rh.firebaseapp.com",
-    projectId: "atestados-rh",
-    storageBucket: "atestados-rh.firebasestorage.app",
-    messagingSenderId: "469782444506",
-    appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3",
-    measurementId: "G-6CENHMEKN4"
-  };
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
+        authDomain: "atestados-rh.firebaseapp.com",
+        projectId: "atestados-rh",
+        storageBucket: "atestados-rh.firebasestorage.app",
+        messagingSenderId: "469782444506",
+        appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Exporta para o window para o envio.js usar
+    window.db = db;
+    window.storage = storage;
+    window.firebaseImports = { ref, uploadBytes, getDownloadURL, collection, addDoc, serverTimestamp };
 </script>
+
     
     <script src="envio.js"></script>
 </body>
