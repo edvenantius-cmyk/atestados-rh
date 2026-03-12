@@ -389,14 +389,19 @@
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 
         // ⚠️ VOCÊ VAI SUBSTITUIR ISSO COM SUA CONFIGURAÇÃO DO FIREBASE
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO_ID",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
+        const firebaseConfig = { 
+  apiKey : "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo" , 
+  authDomain:"atestados-rh.firebaseapp.com", 
+  projectId:"atestados-rh", 
+  bucket de armazenamento : "atestados-rh.firebasestorage.app" , 
+  messagingSenderId : " 469782444506" 
+  appId : "1:469782444506:web:e285cec51e7ab49c8ba8e3" , 
+  ID da medição : "G-6CENHMEKN4" 
+};
+
+// Inicializar o Firebase
+const app = initializeApp ( firebaseConfig );
+const analytics = getAnalytics ( app );
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
