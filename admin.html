@@ -432,26 +432,16 @@
         </div>
     </div>
 
-    <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    <!-- SDK do Supabase (substitui o do Firebase) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script>
+        // ⚠️ Troque pelos MESMOS dados do index.html (mesmo projeto Supabase)
+        const SUPABASE_URL = "https://sxaaastqlyhxaqyqfmwc.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_zp1R6voWptvzCOosh8nMsA_vDbCZA2J";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAjZZabGonTkvqPz8hIyk_nAk24IykPvzo",
-        authDomain: "atestados-rh.firebaseapp.com",
-        projectId: "atestados-rh",
-        storageBucket: "atestados-rh.firebasestorage.app",
-        messagingSenderId: "469782444506",
-        appId: "1:469782444506:web:e285cec51e7ab49c8ba8e3"
-    };
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.db = db;
-    window.firebaseImports = { collection, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy };
-</script>
-    
     <script src="admin.js"></script>
 </body>
 </html>
