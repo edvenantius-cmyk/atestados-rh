@@ -131,6 +131,13 @@ function showAlert(message, type) {
     }, 5000);
 }
 
+// Gera um nome de arquivo seguro (sem espaços/acentos) para o Storage
+function sanitizarNomeArquivo(nome) {
+    return nome
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+        .replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
 // Enviar formulário
 document.getElementById('atestadoForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -150,34 +157,48 @@ document.getElementById('atestadoForm').addEventListener('submit', async functio
     document.getElementById('loading').classList.add('show');
     
     try {
-        // 1. Upload do arquivo para Firebase Storage
-        const { ref, uploadBytes, getDownloadURL } = window.firebaseImports;
-        const storage = window.storage;
-        
+        const supabase = window.supabaseClient;
+
+        // 1. Upload do arquivo para o Supabase Storage (bucket "atestados")
         const timestamp = Date.now();
-        const fileName = `${timestamp}_${arquivo.name}`;
-        const storageRef = ref(storage, `atestados/${fileName}`);
-        
-        // Upload
-        const snapshot = await uploadBytes(storageRef, arquivo);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        
-        // 2. Salvar dados no Firestore
-        const { collection, addDoc, serverTimestamp } = window.firebaseImports;
-        const db = window.db;
-        
-        await addDoc(collection(db, 'atestados'), {
-            nome: nome,
-            tipo: tipo,
-            cid: cid || 'Não informado',
-            cidDescricao: cid ? (cidDatabase[cid] || 'Não encontrado') : 'Não informado',
-            arquivoNome: arquivo.name,
-            arquivoURL: downloadURL,
-            arquivoTipo: arquivo.type,
-            arquivoTamanho: arquivo.size,
-            dataEnvio: serverTimestamp(),
-            status: 'novo'
-        });
+        const nomeArquivoSeguro = sanitizarNomeArquivo(arquivo.name);
+        const caminhoArquivo = `atestados/${timestamp}_${nomeArquivoSeguro}`;
+
+        const { error: uploadError } = await supabase
+            .storage
+            .from('atestados')
+            .upload(caminhoArquivo, arquivo, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: arquivo.type
+            });
+
+        if (uploadError) throw uploadError;
+
+        // 2. Pega a URL pública do arquivo enviado
+        const { data: urlData } = supabase
+            .storage
+            .from('atestados')
+            .getPublicUrl(caminhoArquivo);
+
+        const arquivoURL = urlData.publicUrl;
+
+        // 3. Salvar dados na tabela "atestados" (Postgres)
+        const { error: insertError } = await supabase
+            .from('atestados')
+            .insert({
+                nome: nome,
+                tipo: tipo,
+                cid: cid || 'Não informado',
+                cid_descricao: cid ? (cidDatabase[cid] || 'Não encontrado') : 'Não informado',
+                arquivo_nome: arquivo.name,
+                arquivo_url: arquivoURL,
+                arquivo_tipo: arquivo.type,
+                arquivo_tamanho: arquivo.size,
+                status: 'novo'
+            });
+
+        if (insertError) throw insertError;
         
         // Mostrar sucesso
         document.getElementById('loading').classList.remove('show');
@@ -187,6 +208,6 @@ document.getElementById('atestadoForm').addEventListener('submit', async functio
         console.error('Erro ao enviar:', error);
         document.getElementById('loading').classList.remove('show');
         document.getElementById('atestadoForm').style.display = 'block';
-        showAlert('Erro ao enviar documento: ' + error.message, 'error');
+        showAlert('Erro ao enviar documento: ' + (error.message || 'Erro desconhecido'), 'error');
     }
 });
