@@ -1,6 +1,6 @@
 const SENHA_CORRETA = 'guitar182';
 let todosAtestados = [];
-let unsubscribe = null;
+let canalRealtime = null;
 
 // Login
 document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -38,31 +38,41 @@ window.addEventListener('load', () => {
 // Logout
 function logout() {
     if (confirm('Tem certeza que deseja sair?')) {
-        if (unsubscribe) unsubscribe();
+        if (canalRealtime) window.supabaseClient.removeChannel(canalRealtime);
         sessionStorage.removeItem('rh_autenticado');
         location.reload();
     }
 }
 
 // Iniciar sincronização em tempo real
-function iniciarSincronizacao() {
-    const { collection, query, orderBy, onSnapshot } = window.firebaseImports;
-    const db = window.db;
-    
-    const q = query(collection(db, 'atestados'), orderBy('dataEnvio', 'desc'));
-    
-    unsubscribe = onSnapshot(q, (snapshot) => {
-        todosAtestados = [];
-        snapshot.forEach((doc) => {
-            todosAtestados.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-        
-        atualizarEstatisticas();
-        renderizarTabela(todosAtestados);
-    });
+async function iniciarSincronizacao() {
+    // Carrega os dados existentes
+    await carregarAtestados();
+
+    // Escuta inserções, atualizações e exclusões em tempo real
+    canalRealtime = window.supabaseClient
+        .channel('atestados-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'atestados' }, () => {
+            carregarAtestados();
+        })
+        .subscribe();
+}
+
+// Buscar todos os atestados do banco
+async function carregarAtestados() {
+    const { data, error } = await window.supabaseClient
+        .from('atestados')
+        .select('*')
+        .order('data_envio', { ascending: false });
+
+    if (error) {
+        console.error('Erro ao carregar atestados:', error);
+        return;
+    }
+
+    todosAtestados = data;
+    atualizarEstatisticas();
+    renderizarTabela(todosAtestados);
 }
 
 // Atualizar estatísticas
@@ -112,8 +122,8 @@ function renderizarTabela(atestados) {
     }
     
     tbody.innerHTML = atestados.map(atestado => {
-        const data = atestado.dataEnvio ? 
-            new Date(atestado.dataEnvio.toDate()).toLocaleString('pt-BR') : 
+        const data = atestado.data_envio ? 
+            new Date(atestado.data_envio).toLocaleString('pt-BR') : 
             'Aguardando...';
         
         const tipoClass = atestado.tipo;
@@ -133,7 +143,7 @@ function renderizarTabela(atestados) {
                 <td><span class="badge ${tipoClass}">${tipoLabel}</span></td>
                 <td>
                     ${atestado.cid !== 'Não informado' ? 
-                        `<strong>${atestado.cid}</strong><br><small style="color: #6B7280;">${atestado.cidDescricao}</small>` 
+                        `<strong>${atestado.cid}</strong><br><small style="color: #6B7280;">${atestado.cid_descricao}</small>` 
                         : '<span style="color: #9CA3AF;">Não informado</span>'}
                 </td>
                 <td>${data}</td>
@@ -175,19 +185,19 @@ async function verDetalhes(id) {
     if (!atestado) return;
     
     // Marcar como visto
-    const { doc, updateDoc } = window.firebaseImports;
-    const db = window.db;
-    
     try {
-        await updateDoc(doc(db, 'atestados', id), {
-            status: 'visto'
-        });
+        const { error } = await window.supabaseClient
+            .from('atestados')
+            .update({ status: 'visto' })
+            .eq('id', id);
+
+        if (error) throw error;
     } catch (error) {
         console.error('Erro ao marcar como visto:', error);
     }
     
-    const data = atestado.dataEnvio ? 
-        new Date(atestado.dataEnvio.toDate()).toLocaleString('pt-BR') : 
+    const data = atestado.data_envio ? 
+        new Date(atestado.data_envio).toLocaleString('pt-BR') : 
         'Aguardando...';
     
     const tipoLabel = {
@@ -197,20 +207,20 @@ async function verDetalhes(id) {
         'outro': 'Outro'
     }[atestado.tipo] || atestado.tipo;
     
-    const tamanhoMB = (atestado.arquivoTamanho / (1024 * 1024)).toFixed(2);
+    const tamanhoMB = (atestado.arquivo_tamanho / (1024 * 1024)).toFixed(2);
     
     let visualizador = '';
     
-    if (atestado.arquivoTipo === 'application/pdf') {
+    if (atestado.arquivo_tipo === 'application/pdf') {
         visualizador = `
             <div class="file-viewer">
-                <iframe src="${atestado.arquivoURL}"></iframe>
+                <iframe src="${atestado.arquivo_url}"></iframe>
             </div>
         `;
-    } else if (atestado.arquivoTipo.startsWith('image/')) {
+    } else if (atestado.arquivo_tipo && atestado.arquivo_tipo.startsWith('image/')) {
         visualizador = `
             <div class="file-viewer">
-                <img src="${atestado.arquivoURL}" alt="Documento">
+                <img src="${atestado.arquivo_url}" alt="Documento">
             </div>
         `;
     }
@@ -231,7 +241,7 @@ async function verDetalhes(id) {
             </div>
             <div class="info-item">
                 <div class="label">Descrição do CID</div>
-                <div class="value">${atestado.cidDescricao}</div>
+                <div class="value">${atestado.cid_descricao}</div>
             </div>
             <div class="info-item">
                 <div class="label">Data de Envio</div>
@@ -239,7 +249,7 @@ async function verDetalhes(id) {
             </div>
             <div class="info-item">
                 <div class="label">Arquivo</div>
-                <div class="value">${atestado.arquivoNome} (${tamanhoMB} MB)</div>
+                <div class="value">${atestado.arquivo_nome} (${tamanhoMB} MB)</div>
             </div>
         </div>
         
@@ -276,10 +286,18 @@ function baixarArquivo(id) {
     if (!atestado) return;
     
     const link = document.createElement('a');
-    link.href = atestado.arquivoURL;
-    link.download = atestado.arquivoNome;
+    link.href = atestado.arquivo_url;
+    link.download = atestado.arquivo_nome;
     link.target = '_blank';
     link.click();
+}
+
+// Extrai o caminho do arquivo dentro do bucket a partir da URL pública
+function caminhoDoStorage(url) {
+    const marcador = '/storage/v1/object/public/atestados/';
+    const indice = url.indexOf(marcador);
+    if (indice === -1) return null;
+    return url.substring(indice + marcador.length);
 }
 
 // Excluir atestado
@@ -288,11 +306,21 @@ async function excluirAtestado(id) {
     if (!atestado) return;
     
     if (confirm(`⚠️ ATENÇÃO\n\nTem certeza que deseja EXCLUIR o documento de:\n\n${atestado.nome}\n\nEsta ação não pode ser desfeita!`)) {
-        const { doc, deleteDoc } = window.firebaseImports;
-        const db = window.db;
-        
         try {
-            await deleteDoc(doc(db, 'atestados', id));
+            // Apaga o registro na tabela
+            const { error: deleteError } = await window.supabaseClient
+                .from('atestados')
+                .delete()
+                .eq('id', id);
+
+            if (deleteError) throw deleteError;
+
+            // Apaga o arquivo do Storage também (evita arquivo órfão ocupando espaço)
+            const caminho = caminhoDoStorage(atestado.arquivo_url);
+            if (caminho) {
+                await window.supabaseClient.storage.from('atestados').remove([caminho]);
+            }
+
             fecharModal();
             alert('✅ Documento excluído com sucesso!');
         } catch (error) {
@@ -311,13 +339,23 @@ async function limparTodos() {
     
     if (confirm(`⚠️ ATENÇÃO CRÍTICA\n\nVocê está prestes a EXCLUIR TODOS OS ${todosAtestados.length} DOCUMENTOS!\n\nEsta ação NÃO PODE ser desfeita!\n\nTem certeza?`)) {
         if (confirm('Confirma NOVAMENTE? Todos os documentos serão perdidos!')) {
-            const { doc, deleteDoc } = window.firebaseImports;
-            const db = window.db;
-            
             try {
-                for (const atestado of todosAtestados) {
-                    await deleteDoc(doc(db, 'atestados', atestado.id));
+                const ids = todosAtestados.map(a => a.id);
+                const caminhos = todosAtestados
+                    .map(a => caminhoDoStorage(a.arquivo_url))
+                    .filter(Boolean);
+
+                const { error: deleteError } = await window.supabaseClient
+                    .from('atestados')
+                    .delete()
+                    .in('id', ids);
+
+                if (deleteError) throw deleteError;
+
+                if (caminhos.length > 0) {
+                    await window.supabaseClient.storage.from('atestados').remove(caminhos);
                 }
+
                 alert('✅ Todos os documentos foram excluídos!');
             } catch (error) {
                 console.error('Erro ao limpar:', error);
